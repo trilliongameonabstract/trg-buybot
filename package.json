@@ -1,0 +1,19 @@
+{
+  "name": "buybot-trg",
+  "version": "1.0.0",
+  "main": "buybot.js",
+  "scripts": {
+    "start": "node buybot.js",
+    "broadcast": "node broadcast.js",
+    "test": "node testBuy.js",
+    "volume": "node volumeReporter.js",
+    "schedule": "node scheduleBroadcast.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "ethers": "^6.7.0",
+    "telegraf": "^4.12.3",
+    "axios": "^1.6.8",
+    "node-cron": "^3.0.2"
+  }
+}
