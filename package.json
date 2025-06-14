@@ -1,8 +1,7 @@
 {
   "name": "buybot-trg",
   "version": "1.0.0",
-  "description": "BuyBot TRG Token on Abstract Chain",
-  "main": "buybot.js",
+  "type": "module",
   "scripts": {
     "start": "node buybot.js"
   },

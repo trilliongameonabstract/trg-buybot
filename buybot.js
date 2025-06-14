@@ -1,64 +1,46 @@
-require("dotenv").config();
-const { ethers } = require("ethers");
-const { Telegraf } = require("telegraf");
-const { getUSDValue } = require("./utils");
-const { trackBuyer, getTopBuyers } = require("./trackers");
+import { ethers } from "ethers";
+import dotenv from "dotenv";
+import axios from "axios";
+import cron from "node-cron";
+import { Telegraf } from "telegraf";
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+dotenv.config();
 
-const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS.toLowerCase();
-const PAIR_ADDRESS = process.env.PAIR_ADDRESS.toLowerCase();
-const SYMBOL = process.env.TOKEN_SYMBOL;
-const DECIMALS = Number(process.env.TOKEN_DECIMALS);
-const WHALE_THRESHOLD = parseFloat(process.env.WHALE_THRESHOLD);
+const RPC_URL = process.env.RPC_URL;
+const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID_GROUP = process.env.TELEGRAM_CHAT_ID_GROUP;
 
-// === Listener ===
-const abi = [
-  "event Transfer(address indexed from, address indexed to, uint256 value)"
-];
+const provider = new ethers.JsonRpcProvider(RPC_URL);
+const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
-const contract = new ethers.Contract(TOKEN_ADDRESS, abi, provider);
+async function getTokenInfo() {
+  const blockNumber = await provider.getBlockNumber();
+  return {
+    blockNumber,
+    token: TOKEN_ADDRESS
+  };
+}
 
-console.log("📡 BuyBot is live...");
+async function notifyTelegram(message) {
+  await bot.telegram.sendMessage(TELEGRAM_CHAT_ID_GROUP, message, {
+    parse_mode: "Markdown"
+  });
+}
 
-contract.on("Transfer", async (from, to, amount) => {
-  from = from.toLowerCase();
-  to = to.toLowerCase();
-
-  if (from === PAIR_ADDRESS) {
-    const value = parseFloat(ethers.utils.formatUnits(amount, DECIMALS));
-    const usd = await getUSDValue(value);
-    await trackBuyer(to, value);
-
-    const abscanURL = `https://abscan.org/address/${TOKEN_ADDRESS}`;
-    const dexviewURL = `https://www.dexview.com/abs/${TOKEN_ADDRESS}`;
-
-    let msg = `🟢 *Buy Alert* 🟢\n` +
-              `${value.toLocaleString()} ${SYMBOL} ($${usd})\n` +
-              `👤 \`${to}\`\n` +
-              `📈 [Chart](${dexviewURL}) | 🔍 [Abscan](${abscanURL})`;
-
-    if (value >= WHALE_THRESHOLD) {
-      msg = `🦈 *WHALE BUY ALERT* 🦈\n` +
-            `${value.toLocaleString()} ${SYMBOL} ($${usd})\n` +
-            `👤 \`${to}\`\n` +
-            `📈 [Chart](${dexviewURL}) | 🔍 [Abscan](${abscanURL})\n🚀🚀🚀`;
-
-      await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, msg, {
-        parse_mode: "Markdown",
-        disable_web_page_preview: true
-      });
-    }
-
-    await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_GROUP, msg, {
-      parse_mode: "Markdown",
-      disable_web_page_preview: true
-    });
-
-    const leaderboard = getTopBuyers(3);
-    await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_GROUP, leaderboard, {
-      parse_mode: "Markdown"
-    });
+async function run() {
+  try {
+    const info = await getTokenInfo();
+    const message = `📢 *BuyBot TRG Update*\nBlock: ${info.blockNumber}\nToken: \`${info.token}\``;
+    await notifyTelegram(message);
+    console.log("✅ Message sent");
+  } catch (error) {
+    console.error("❌ Error:", error.message);
   }
-});
+}
+
+// Initial run
+run();
+
+// Cron task example (every hour)
+cron.schedule("0 * * * *", run);
