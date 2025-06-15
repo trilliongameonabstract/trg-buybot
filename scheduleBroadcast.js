@@ -16,7 +16,7 @@ const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 🎯 <b>Supply:</b> 1,000,000,000 TRG  
 🧠 <i>"One Game. One Winner. One Trillion."</i>
 
-⚠️ <b>Warning:</b> <i>Do NOT buy this token if you have too much money. It's only for fearless PvP warriors...</i> 💸🔥`;
+⚠️ <b>Warning:</b> <i>Do NOT buy this token if you are rich. WEALTHY ONLY...</i> 💸🔥`;
 
 // Schedule setiap hari pukul 20.00 WIB (UTC+7 → cron: 13 UTC)
 cron.schedule("0 13 * * *", () => {
