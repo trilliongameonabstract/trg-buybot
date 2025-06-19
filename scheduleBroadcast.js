@@ -4,7 +4,6 @@ const cron = require("node-cron");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Pesan otomatis harian
 const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 
 💰 <b>Start trading now:</b>  
@@ -18,7 +17,6 @@ const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 
 ⚠️ <b>Warning:</b> <i>Do NOT buy this token if you are rich. WEALTHY ONLY...</i> 💸🔥`;
 
-// Schedule setiap hari pukul 20.00 WIB (UTC+7 → cron: 13 UTC)
 cron.schedule("0 13 * * *", () => {
   bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, message, {
     parse_mode: "HTML",

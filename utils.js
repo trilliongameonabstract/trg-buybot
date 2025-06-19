@@ -10,7 +10,7 @@ const getUSDValue = async (amountTRG) => {
     });
 
     const ethPrice = res.data.ethereum.usd || 0;
-    const estETHperTRG = 0.0000001; // change to your rate later
+    const estETHperTRG = 0.0000001;
     const usd = amountTRG * estETHperTRG * ethPrice;
     return usd.toFixed(2);
   } catch (err) {

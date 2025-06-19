@@ -1,11 +1,9 @@
-require("dotenv").config(); // WAJIB agar bisa jalan di lokal
+require("dotenv").config();
 
 const { Telegraf } = require("telegraf");
 
-// Inisialisasi bot
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Pesan Broadcast
 const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 
 💰 <b>Start trading now:</b>  
