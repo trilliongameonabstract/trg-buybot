@@ -85,7 +85,7 @@ bot.command('faq', (ctx) => {
   ctx.replyWithHTML(`📌 <b>FAQ</b>\n\n<b>Q:</b> Is liquidity locked?\n<b>A:</b> Yes, for 1 year.\n\n<b>Q:</b> Fair launch?\n<b>A:</b> Yes, 100% fair, no presale.\n\n<b>Q:</b> Where to buy?\n<b>A:</b> Abstract DEX\n\n<b>Q:</b> Chart?\n<b>A:</b> /chart or <a href="${chartURL}">DEXView</a>`);
 });
 
-// Scheduled Daily Broadcast at 13:00 UTC (20:00 WIB)
+// Scheduled Daily Broadcast at 13:00 UTC 
 const dailyMessage = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 
 💰 <b>Start trading now:</b>  
