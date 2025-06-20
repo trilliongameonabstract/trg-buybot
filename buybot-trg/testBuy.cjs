@@ -3,7 +3,6 @@ const { Telegraf } = require("telegraf");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Dummy data for simulation
 const to = "0xDummyBuyer0000000000000000000000000000000";
 const value = 1_000_000;
 const usd = 253.51;
@@ -15,7 +14,6 @@ const WHALE_THRESHOLD = parseInt(process.env.WHALE_THRESHOLD);
 const abscanURL = `https://abscan.org/address/${TOKEN_ADDRESS}`;
 const dexviewURL = `https://www.dexview.com/abs/${TOKEN_ADDRESS}`;
 
-// Format message
 let msg;
 if (value >= WHALE_THRESHOLD) {
   msg = `🦈 *WHALE BUY ALERT* 🦈\n${value.toLocaleString()} ${SYMBOL} ($${usd})\n👤 \`${to}\`\n` +
@@ -25,13 +23,11 @@ if (value >= WHALE_THRESHOLD) {
         `📈 [Chart](${dexviewURL}) | 🔍 [Abscan](${abscanURL})`;
 }
 
-// Send to GROUP
 bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_GROUP, msg, {
   parse_mode: "Markdown",
   disable_web_page_preview: true,
 });
 
-// Send to CHANNEL
 bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, msg, {
   parse_mode: "Markdown",
   disable_web_page_preview: true,

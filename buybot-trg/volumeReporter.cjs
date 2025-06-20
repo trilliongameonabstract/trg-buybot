@@ -24,7 +24,7 @@ async function fetchVolumeData() {
 
 cron.schedule("0 13 * * *", async () => {
   const { usd, eth } = await fetchVolumeData();
-  const msg = `📊 <b>TRG Volume Hari Ini:</b>\n💰 ${eth} ETH ($${usd})\n<a href="https://dexview.com/abs/${process.env.TOKEN_ADDRESS}">Chart</a> | <a href="https://abscan.org/address/${process.env.TOKEN_ADDRESS}">Abscan</a>`;
+  const msg = `📊 <b>TRG Volume Today:</b>\n💰 ${eth} ETH ($${usd})\n<a href="https://dexview.com/abs/${process.env.TOKEN_ADDRESS}">Chart</a> | <a href="https://abscan.org/address/${process.env.TOKEN_ADDRESS}">Abscan</a>`;
 
   try {
     await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, msg, {

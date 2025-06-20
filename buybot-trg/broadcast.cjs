@@ -1,9 +1,9 @@
 require("dotenv").config();
+
 const { Telegraf } = require("telegraf");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Pesan broadcast manual
 const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 
 💰 <b>Start trading now:</b>  
@@ -15,18 +15,24 @@ const message = `🚀 <b>TRILLION GAME (TRG) IS NOW LIVE!</b>
 🎯 <b>Supply:</b> 1,000,000,000 TRG  
 🧠 <i>"One Game. One Winner. One Trillion."</i>
 
-⚠️ <b>Warning:</b> <i>Do NOT buy this token if you have too much money. It's only for fearless PvP warriors...</i> 💸🔥`;
+⚠️ <b>Warning:</b> <i>Do NOT buy this token if you are rich. WEALTHY ONLY...</i> 💸🔥`;
 
-bot.telegram
-  .sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, message, {
-    parse_mode: "HTML",
-    disable_web_page_preview: false,
-  })
-  .then(() => {
+(async () => {
+  try {
+    const chatId = process.env.TELEGRAM_CHAT_ID_CHANNEL;
+    if (!chatId || !process.env.TELEGRAM_BOT_TOKEN || !process.env.TOKEN_ADDRESS) {
+      throw new Error("❌ Required environment variables are missing.");
+    }
+
+    await bot.telegram.sendMessage(chatId, message, {
+      parse_mode: "HTML",
+      disable_web_page_preview: false,
+    });
+
     console.log("📢 Broadcast sent successfully!");
     process.exit(0);
-  })
-  .catch((err) => {
-    console.error("❌ Failed to send broadcast:", err);
+  } catch (err) {
+    console.error("❌ Failed to send broadcast:", err.message || err);
     process.exit(1);
-  });
+  }
+})();
