@@ -1,40 +1,30 @@
-require("dotenv").config();
-const { Telegraf } = require("telegraf");
-const cron = require("node-cron");
-const axios = require("axios");
+import dotenv from 'dotenv';
+import cron from 'node-cron';
+import { getDailyVolume } from './trackers.js';
+import { Telegraf } from 'telegraf';
+
+dotenv.config();
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-async function fetchVolumeData() {
-  const token = process.env.TOKEN_ADDRESS.toLowerCase();
+cron.schedule('0 13 * * *', async () => {
   try {
-    const res = await axios.get(`https://api.dexview.com/pairs/abs/${token}`);
-    const vol = res.data.pair.volumeUsd24h || 0;
-    const volEth = res.data.pair.volumeEth24h || 0;
+    const volume = await getDailyVolume();
 
-    return {
-      usd: Number(vol).toLocaleString("en-US", { maximumFractionDigits: 0 }),
-      eth: Number(volEth).toFixed(2)
-    };
-  } catch (err) {
-    console.error("❌ Failed to fetch volume data:", err.message);
-    return { usd: "N/A", eth: "N/A" };
-  }
-}
+    const message = `📊 <b>Daily TRG Volume Report</b>
 
-cron.schedule("0 13 * * *", async () => {
-  const { usd, eth } = await fetchVolumeData();
-  const msg = `📊 <b>TRG Volume Today:</b>\n💰 ${eth} ETH ($${usd})\n<a href="https://dexview.com/abs/${process.env.TOKEN_ADDRESS}">Chart</a> | <a href="https://abscan.org/address/${process.env.TOKEN_ADDRESS}">Abscan</a>`;
+🔁 24h Volume: <b>$${volume.toLocaleString()}</b>  
+💎 Keep watching the flow.
 
-  try {
-    await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, msg, {
-      parse_mode: "HTML",
-      disable_web_page_preview: false
+#TRG #TrillionGame #VolumeBot`;
+
+    await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, message, {
+      parse_mode: 'HTML',
+      disable_web_page_preview: true,
     });
-    console.log("📊 Volume update sent.");
-  } catch (err) {
-    console.error("❌ Failed to send volume report:", err.message);
+
+    console.log('✅ Daily volume report sent!');
+  } catch (error) {
+    console.error('❌ Failed to send volume report:', error.message || error);
   }
 });
-
-console.log("📈 volumeReporter.js is running...");

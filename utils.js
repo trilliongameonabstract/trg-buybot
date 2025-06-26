@@ -1,21 +1,31 @@
-const axios = require("axios");
+import { Telegraf } from 'telegraf';
+import dotenv from 'dotenv';
 
-const getUSDValue = async (amountTRG) => {
+dotenv.config();
+
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+
+/**
+ * Sends a message to both Telegram group and channel
+ * @param {string} message - The message to send
+ */
+export async function sendTelegramMessage(message) {
   try {
-    const res = await axios.get("https://api.coingecko.com/api/v3/simple/price", {
-      params: {
-        ids: "ethereum",
-        vs_currencies: "usd"
-      }
-    });
+    const options = {
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true,
+    };
 
-    const ethPrice = res.data.ethereum.usd || 0;
-    const estETHperTRG = 0.0000001;
-    const usd = amountTRG * estETHperTRG * ethPrice;
-    return usd.toFixed(2);
-  } catch (err) {
-    return "0.00";
+    if (process.env.TELEGRAM_CHAT_ID_GROUP) {
+      await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_GROUP, message, options);
+    }
+
+    if (process.env.TELEGRAM_CHAT_ID_CHANNEL) {
+      await bot.telegram.sendMessage(process.env.TELEGRAM_CHAT_ID_CHANNEL, message, options);
+    }
+
+    console.log('📨 Message sent to Telegram group & channel');
+  } catch (error) {
+    console.error('❌ Failed to send Telegram message:', error.message || error);
   }
-};
-
-module.exports = { getUSDValue };
+}

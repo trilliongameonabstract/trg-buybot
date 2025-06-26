@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node buybot.js"
+    "start": "node buybot.js",
+    "volume": "node volumeReporter.cjs",
+    "broadcast": "node scheduleBroadcast.cjs"
   },
   "dependencies": {
     "axios": "^1.6.8",
     "dotenv": "^16.3.1",
     "ethers": "^6.14.4",
     "node-cron": "^3.0.3",
-    "telegraf": "^4.12.3"
+    "telegraf": "^4.12.3",
+    "web3": "^4.16.0"
   }
 }
