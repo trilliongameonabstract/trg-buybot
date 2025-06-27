@@ -1,7 +1,7 @@
 {
   "name": "buybot-trg",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node buybot.js",
     "volume": "node volumeReporter.cjs",

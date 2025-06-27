@@ -1,26 +1,24 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import Web3 from 'web3';
-import fs from 'fs';
-import IERC20ABI from './interfaces/IERC20.json';
-import IUniswapV2PairABI from './interfaces/IUniswapV2Pair.json';
+require('dotenv').config();
+const { Web3 } = require('web3');
+const IERC20ABI = require('./interfaces/IERC20.json');
+const IUniswapV2PairABI = require('./interfaces/IUniswapV2Pair.json');
+const fs = require('fs');
 
 const web3 = new Web3(process.env.RPC_URL);
 const pairAddress = process.env.PAIR_ADDRESS.toLowerCase();
 const tokenAddress = process.env.TOKEN_ADDRESS.toLowerCase();
-const tokenDecimals = parseInt(process.env.TOKEN_DECIMALS || '18');
 const volumeLogFile = 'volume-log.json';
 
-// Get token price from reserves
-export async function getPriceInfo() {
+async function getPriceInfo() {
   try {
     const pair = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
     const reserves = await pair.methods.getReserves().call();
     const token0 = await pair.methods.token0().call();
-    const [reserve0, reserve1] = [reserves._reserve0, reserves._reserve1];
+    const token1 = await pair.methods.token1().call();
 
+    const [reserve0, reserve1] = [reserves._reserve0, reserves._reserve1];
     let tokenReserve, ethReserve;
+
     if (token0.toLowerCase() === tokenAddress) {
       tokenReserve = reserve0;
       ethReserve = reserve1;
@@ -29,11 +27,8 @@ export async function getPriceInfo() {
       ethReserve = reserve0;
     }
 
-    const tokenAmount = parseFloat(web3.utils.fromWei(tokenReserve));
-    const ethAmount = parseFloat(web3.utils.fromWei(ethReserve));
-
-    const priceInETH = ethAmount / tokenAmount;
-    const ethPriceUSD = 3500; // Hardcoded for now
+    const priceInETH = parseFloat(web3.utils.fromWei(ethReserve)) / parseFloat(web3.utils.fromWei(tokenReserve));
+    const ethPriceUSD = 3500;
     const priceInUSD = priceInETH * ethPriceUSD;
 
     return {
@@ -46,8 +41,7 @@ export async function getPriceInfo() {
   }
 }
 
-// Get total volume in last 24h from local log file
-export async function getDailyVolume() {
+async function getDailyVolume() {
   try {
     const now = Date.now();
     let logs = [];
@@ -58,7 +52,6 @@ export async function getDailyVolume() {
 
     logs = logs.filter((log) => now - log.timestamp <= 24 * 60 * 60 * 1000);
     const totalVolume = logs.reduce((sum, log) => sum + parseFloat(log.usd), 0);
-
     return totalVolume;
   } catch (err) {
     console.error('getDailyVolume error:', err);
@@ -66,8 +59,7 @@ export async function getDailyVolume() {
   }
 }
 
-// Save new volume
-export async function logVolume(usdAmount) {
+async function logVolume(usdAmount) {
   const now = Date.now();
   let logs = [];
 
@@ -78,3 +70,9 @@ export async function logVolume(usdAmount) {
   logs.push({ timestamp: now, usd: usdAmount });
   fs.writeFileSync(volumeLogFile, JSON.stringify(logs, null, 2));
 }
+
+module.exports = {
+  getPriceInfo,
+  getDailyVolume,
+  logVolume,
+};
