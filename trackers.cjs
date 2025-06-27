@@ -1,14 +1,15 @@
 require('dotenv').config();
-const { Web3 } = require('web3');
+const Web3 = require('web3');
+const fs = require('fs');
 const IERC20ABI = require('./interfaces/IERC20.json');
 const IUniswapV2PairABI = require('./interfaces/IUniswapV2Pair.json');
-const fs = require('fs');
 
 const web3 = new Web3(process.env.RPC_URL);
 const pairAddress = process.env.PAIR_ADDRESS.toLowerCase();
 const tokenAddress = process.env.TOKEN_ADDRESS.toLowerCase();
 const volumeLogFile = 'volume-log.json';
 
+// === GET PRICE ===
 async function getPriceInfo() {
   try {
     const pair = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
@@ -28,7 +29,7 @@ async function getPriceInfo() {
     }
 
     const priceInETH = parseFloat(web3.utils.fromWei(ethReserve)) / parseFloat(web3.utils.fromWei(tokenReserve));
-    const ethPriceUSD = 3500;
+    const ethPriceUSD = 3500; // Static price, update if needed
     const priceInUSD = priceInETH * ethPriceUSD;
 
     return {
@@ -41,6 +42,7 @@ async function getPriceInfo() {
   }
 }
 
+// === GET DAILY VOLUME ===
 async function getDailyVolume() {
   try {
     const now = Date.now();
@@ -59,6 +61,7 @@ async function getDailyVolume() {
   }
 }
 
+// === LOG VOLUME ===
 async function logVolume(usdAmount) {
   const now = Date.now();
   let logs = [];
@@ -71,8 +74,23 @@ async function logVolume(usdAmount) {
   fs.writeFileSync(volumeLogFile, JSON.stringify(logs, null, 2));
 }
 
+// === MONITOR PAIR (DUMMY) ===
+// Replace this with actual event listener from WebSocket
+function monitorPair(callback) {
+  console.log('🔍 Listening to pair... (dummy mode)');
+  // Simulate a buy event after 5 seconds
+  setTimeout(() => {
+    callback({
+      sender: '0xDummyBuyer',
+      amount: 420.69,
+      hash: '0xFakeTxHash123',
+    });
+  }, 5000);
+}
+
 module.exports = {
   getPriceInfo,
   getDailyVolume,
   logVolume,
+  monitorPair,
 };
