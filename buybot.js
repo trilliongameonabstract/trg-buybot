@@ -1,14 +1,17 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import { Telegraf } from 'telegraf';
-import { sendBuyNotification } from './broadcast.cjs';
+import broadcast from './broadcast.cjs'; // ✅ default import from CommonJS
+import { monitorPair } from './trackers.js';
 
-dotenv.config();
+const { sendBuyNotification } = broadcast;
 
 // === Setup Telegram Bot ===
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Command handler (optional)
+// Command handler
 bot.command('start', (ctx) => {
   ctx.reply('BuyBot TRG is alive! 🚀');
 });
