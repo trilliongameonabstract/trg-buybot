@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { Telegraf } from 'telegraf';
 import { sendBuyNotification } from './broadcast.cjs';
-import { monitorPair } from './trackers.js';
 
 dotenv.config();
 
