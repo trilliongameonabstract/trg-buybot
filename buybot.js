@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const { Telegraf } = require('telegraf');
 const { sendBuyNotification } = require('./broadcast.cjs');
-const { monitorPair } = require('./trackers.js');
+const { monitorPair } = require('./trackers.cjs');
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
