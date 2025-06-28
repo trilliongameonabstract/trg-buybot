@@ -9,7 +9,7 @@ const pairAddress = process.env.PAIR_ADDRESS.toLowerCase();
 const tokenAddress = process.env.TOKEN_ADDRESS.toLowerCase();
 const volumeLogFile = 'volume-log.json';
 
-// Get price info
+// === Get price info ===
 async function getPriceInfo() {
   try {
     const pair = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
@@ -28,8 +28,15 @@ async function getPriceInfo() {
       ethReserve = reserve0;
     }
 
-    const priceInETH = parseFloat(web3.utils.fromWei(ethReserve)) / parseFloat(web3.utils.fromWei(tokenReserve));
-    const ethPriceUSD = 3500; // You can update this dynamically if needed
+    const tokenReserveParsed = parseFloat(web3.utils.fromWei(tokenReserve));
+    const ethReserveParsed = parseFloat(web3.utils.fromWei(ethReserve));
+
+    if (tokenReserveParsed === 0 || ethReserveParsed === 0) {
+      throw new Error("Reserves are zero – pair might not be active or has no liquidity.");
+    }
+
+    const priceInETH = ethReserveParsed / tokenReserveParsed;
+    const ethPriceUSD = 2500; // Ganti ke API jika ingin dinamis
     const priceInUSD = priceInETH * ethPriceUSD;
 
     return {
@@ -37,12 +44,12 @@ async function getPriceInfo() {
       usdPrice: priceInUSD.toFixed(6),
     };
   } catch (err) {
-    console.error('getPriceInfo error:', err);
+    console.error('getPriceInfo error:', err.message);
     return { ethPrice: '0', usdPrice: '0' };
   }
 }
 
-// Log volume
+// === Log transaksi buy besar ===
 async function logVolume(usdAmount) {
   const now = Date.now();
   let logs = [];
@@ -55,7 +62,7 @@ async function logVolume(usdAmount) {
   fs.writeFileSync(volumeLogFile, JSON.stringify(logs, null, 2));
 }
 
-// Get 24h volume
+// === Get 24h volume ===
 async function getDailyVolume() {
   try {
     const now = Date.now();
@@ -69,18 +76,18 @@ async function getDailyVolume() {
     const totalVolume = logs.reduce((sum, log) => sum + parseFloat(log.usd), 0);
     return totalVolume;
   } catch (err) {
-    console.error('getDailyVolume error:', err);
+    console.error('getDailyVolume error:', err.message);
     return 0;
   }
 }
 
-// Real-time monitoring
+// === Pantau transaksi live di pair ===
 function monitorPair(callback) {
   const pairContract = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
 
   pairContract.events.Swap({}, async (error, event) => {
     if (error) {
-      console.error('Swap event error:', error);
+      console.error('Swap event error:', error.message);
       return;
     }
 
@@ -101,7 +108,7 @@ function monitorPair(callback) {
         });
       }
     } catch (err) {
-      console.error('monitorPair processing error:', err);
+      console.error('monitorPair processing error:', err.message);
     }
   });
 }
