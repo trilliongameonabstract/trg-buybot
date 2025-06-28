@@ -9,7 +9,6 @@ const pairAddress = process.env.PAIR_ADDRESS.toLowerCase();
 const tokenAddress = process.env.TOKEN_ADDRESS.toLowerCase();
 const volumeLogFile = 'volume-log.json';
 
-// === Get price info ===
 async function getPriceInfo() {
   try {
     const pair = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
@@ -36,7 +35,7 @@ async function getPriceInfo() {
     }
 
     const priceInETH = ethReserveParsed / tokenReserveParsed;
-    const ethPriceUSD = 2500; // Ganti ke API jika ingin dinamis
+    const ethPriceUSD = 2500; 
     const priceInUSD = priceInETH * ethPriceUSD;
 
     return {
@@ -48,8 +47,6 @@ async function getPriceInfo() {
     return { ethPrice: '0', usdPrice: '0' };
   }
 }
-
-// === Log transaksi buy besar ===
 async function logVolume(usdAmount) {
   const now = Date.now();
   let logs = [];
@@ -62,7 +59,6 @@ async function logVolume(usdAmount) {
   fs.writeFileSync(volumeLogFile, JSON.stringify(logs, null, 2));
 }
 
-// === Get 24h volume ===
 async function getDailyVolume() {
   try {
     const now = Date.now();
@@ -81,7 +77,6 @@ async function getDailyVolume() {
   }
 }
 
-// === Pantau transaksi live di pair ===
 function monitorPair(callback) {
   const pairContract = new web3.eth.Contract(IUniswapV2PairABI, pairAddress);
 
