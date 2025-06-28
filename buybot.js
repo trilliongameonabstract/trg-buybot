@@ -88,7 +88,7 @@ Pair Address:
 });
 
 bot.command('holders', (ctx) => {
-  ctx.reply('👥 <b>TRG Holder</b>\n<a href="https://dexscreener.com/abstract/${process.env.PAIR_ADDRESS}'); Click here to view on Dexscreener</a>`);
+ctx.replyWithHTML(`👥 <b>TRG Holder</b>\n<a href="https://dexscreener.com/abstract/${process.env.PAIR_ADDRESS}">Click here to view on Dexscreener</a>`);  
 });
 
 bot.command('burn', (ctx) => {
