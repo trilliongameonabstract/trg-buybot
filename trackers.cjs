@@ -10,13 +10,22 @@ async function getPriceInfo() {
   try {
     const url = `https://api.dexscreener.com/latest/dex/pairs/abstract/${pairAddress}`;
     const res = await axios.get(url);
+    console.log("✅ Dexscreener raw response:", res.data); // 
+
     const data = res.data?.pair;
 
-    if (!data) throw new Error("Dexscreener pair data not found");
+    if (!data) {
+      throw new Error("Dexscreener pair data not found");
+    }
+
+    const ethPrice = parseFloat(data.priceNative);
+    const usdPrice = parseFloat(data.priceUsd);
+
+    console.log("🔢 Parsed price:", { ethPrice, usdPrice }); // 
 
     return {
-      ethPrice: parseFloat(data.priceNative).toFixed(8),
-      usdPrice: parseFloat(data.priceUsd).toFixed(6),
+      ethPrice: ethPrice.toFixed(8),
+      usdPrice: usdPrice.toFixed(6),
     };
   } catch (err) {
     console.error('Dexscreener getPriceInfo error:', err.message);
