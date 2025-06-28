@@ -58,7 +58,7 @@ bot.command('contract', (ctx) => {
 });
 
 bot.command('chart', (ctx) => {
-  ctx.replyWithHTML(`📈 <b>TRG Chart</b>\n<a href="https://dexview.com/abs/${process.env.TOKEN_ADDRESS}">Click here to view on DEXView</a>`);
+  ctx.replyWithHTML(`📈 <b>TRG Chart</b>\n<a href="https://dexscreener.com/abstract/${process.env.PAIR_ADDRESS}">Click here to view on Dexscreener</a>`);
 });
 
 bot.command('supply', (ctx) => {
@@ -68,7 +68,7 @@ bot.command('supply', (ctx) => {
 bot.command('launch', (ctx) => {
   ctx.replyWithHTML(`
 🚀 <b>Launch Info</b>  
-🗓️ June 28, 2025  
+🗓️ June 26, 2025  
 📦 Initial Supply: 1B  
 🔥 0% Tax | 100% LP Burn  
 `);
@@ -83,12 +83,12 @@ bot.command('liquidity', (ctx) => {
 💧 <b>Liquidity Pool</b>  
 Pair Address:  
 <code>${process.env.PAIR_ADDRESS}</code>  
-🔗 <a href="https://abscan.org/address/${process.env.PAIR_ADDRESS}">View on Abscan</a>
+🔗 <a href="https://dexscreener.com/abstract/${process.env.PAIR_ADDRESS}">View on Dexscreener</a>
 `);
 });
 
 bot.command('holders', (ctx) => {
-  ctx.reply('👥 Holders info is not yet tracked. Stay tuned for future updates!');
+  ctx.reply('👥 <b>TRG Holder</b>\n<a href="https://dexscreener.com/abstract/${process.env.PAIR_ADDRESS}'); Click here to view on Dexscreener</a>`);
 });
 
 bot.command('burn', (ctx) => {
